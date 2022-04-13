@@ -327,6 +327,12 @@ func (self *ControlFloor) openWebsocket() {
 						}
 						respondChan <- &CFR_Pong{id: id, text: "done"}
 					}()
+				} else if mType == "autoAcceptAlerts" {
+					udid := root.Get("udid").String()
+					autoAcceptAlerts := root.Get("autoAcceptAlerts").String()
+					dev := self.DevTracker.getDevice(udid)
+					dev.handleAutoAcceptAlerts(autoAcceptAlerts)
+					respondChan <- &CFR_Pong{id: id, text: "done"}
 				} else if mType == "doubleclick" {
 					udid := root.Get("udid").String()
 					x := root.Get("x").Int()

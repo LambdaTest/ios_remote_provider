@@ -472,7 +472,7 @@ func (self *Device) startProcs() {
 		//fmt.Printf("Msg:%s\n", msg )
 
 		if app == "SpringBoard(SpringBoard)" {
-			if strings.Contains(msg, "Presenting <SBUserNotificationAlert") {
+			if self.cfa.autoAcceptAlerts && strings.Contains(msg, "Presenting <SBUserNotificationAlert") {
 				alerts := self.config.alerts
 
 				useAlertMode := true
@@ -780,6 +780,10 @@ func (self *Device) clickAt(x int, y int) {
 
 func (self *Device) doubleclickAt(x int, y int) {
 	self.cfa.doubleclickAt(x, y)
+}
+
+func (self *Device) handleAutoAcceptAlerts(autoAcceptAlerts string) {
+	self.cfa.handleAutoAcceptAlerts(autoAcceptAlerts)
 }
 
 func (self *Device) mouseDown(x int, y int) {
