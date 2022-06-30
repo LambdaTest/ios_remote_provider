@@ -25,20 +25,21 @@ type CFA struct {
 	config     *Config
 	base       string
 	//sessionId     string
-	startChan     chan int
-	js2hid        map[int]int
-	specialKeys   map[int]int
-	transport     *http.Transport
-	client        *http.Client
-	nngPort       int
-	nngPort2      int
-	keyPort       int
-	nngSocket     mangos.Socket
-	nngSocket2    mangos.Socket
-	keySocket     mangos.Socket
-	disableUpdate bool
-	keyActive     bool
-	keyLock       *sync.Mutex
+	startChan        chan int
+	js2hid           map[int]int
+	specialKeys      map[int]int
+	transport        *http.Transport
+	client           *http.Client
+	nngPort          int
+	nngPort2         int
+	keyPort          int
+	nngSocket        mangos.Socket
+	nngSocket2       mangos.Socket
+	keySocket        mangos.Socket
+	disableUpdate    bool
+	keyActive        bool
+	keyLock          *sync.Mutex
+	autoAcceptAlerts bool
 }
 
 func NewCFA(config *Config, devTracker *DeviceTracker, dev *Device) *CFA {
@@ -77,11 +78,12 @@ func NewCFANoStart(config *Config, devTracker *DeviceTracker, dev *Device) *CFA 
 		dev:        dev,
 		config:     config,
 		//base:          fmt.Sprintf("http://127.0.0.1:%d",dev.wdaPort),
-		js2hid:      jh,
-		specialKeys: special,
-		transport:   &http.Transport{},
-		keyActive:   false,
-		keyLock:     &sync.Mutex{},
+		js2hid:           jh,
+		specialKeys:      special,
+		transport:        &http.Transport{},
+		keyActive:        false,
+		keyLock:          &sync.Mutex{},
+		autoAcceptAlerts: true,
 	}
 	//self.client = &http.Client{
 	//    Transport: self.transport,
@@ -496,6 +498,20 @@ func (self *CFA) doubleclickAt(x int, y int) {
         y:%d
     }`, x, y)
 
+	self.nngSocket.Send([]byte(json))
+	self.nngSocket.Recv()
+}
+
+func (self *CFA) handleAutoAcceptAlerts(autoAcceptAlerts string) {
+	json := fmt.Sprintf(`{
+        action: "autoAcceptAlerts"
+        autoAcceptAlerts:%s
+    }`, autoAcceptAlerts)
+	if autoAcceptAlerts == "true" {
+		self.autoAcceptAlerts = true
+	} else {
+		self.autoAcceptAlerts = false
+	}
 	self.nngSocket.Send([]byte(json))
 	self.nngSocket.Recv()
 }
