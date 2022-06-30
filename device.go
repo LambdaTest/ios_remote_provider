@@ -481,11 +481,17 @@ func (self *Device) startProcs() {
 						if strings.Contains(msg, alert.match) {
 							fmt.Printf("Alert matching \"%s\" appeared. Autoresponding with \"%s\"\n",
 								alert.match, alert.response)
+							time.Sleep(time.Second * 2)
 							if self.cfaRunning {
 								useAlertMode = false
 								btnX, btnY := self.cfa.SysElPos("button", alert.response)
 								if btnX == 0 {
-									fmt.Printf("Alert does not contain button \"%s\"\n", alert.response)
+									btnX, btnY = self.cfa.SysElPos("button", "Allow")
+									if btnX == 0 {
+										fmt.Printf("Alert does not contain button \"%s\"\n", alert.response)
+									} else {
+										self.cfa.clickAt(int(btnX), int(btnY))
+									}
 								} else {
 									self.cfa.clickAt(int(btnX), int(btnY))
 								}

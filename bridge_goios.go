@@ -736,6 +736,8 @@ func (self *GIDev) cfa(onStart func(), onStop func(interface{})) {
 				self.cfaIosif(onStart, onStop)
 			} else if devCfaMethod == "manual" {
 				onStart()
+			} else if devCfaMethod == "xcodebuild" {
+				self.cfaXcodebuild(onStart, onStop)
 			} else {
 				self.cfaGoIos(onStart, onStop)
 			}
@@ -756,11 +758,133 @@ func (self *GIDev) wda(onStart func(), onStop func(interface{})) {
 				self.wdaIosif(onStart, onStop)
 			} else if devWdaMethod == "manual" {
 				onStart()
+			} else if devWdaMethod == "xcodebuild" {
+				self.wdaXcodebuild(onStart, onStop)
 			} else if devWdaMethod == "go-ios" {
 				self.wdaGoIos(onStart, onStop)
 			}
 		}
 	}
+}
+
+func (self *GIDev) cfaXcodebuild(onStart func(), onStop func(interface{})) {
+	f, err := os.OpenFile("cfa.log",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"type": "cfa_log_fail",
+		}).Fatal("Could not open cfa.log for writing")
+	}
+
+	deviceIdString := fmt.Sprintf("id=%s", self.udid)
+
+	args := []string{
+		"test-without-building",
+		"-project",
+		"/Users/ltadmin/Documents/ios_control_floor/ios_remote_provider/repos/CFAgent/CFAgent.xcodeproj",
+		"-scheme", "CFAgent",
+		"-derivedDataPath",
+		"/Users/ltadmin/Documents/ios_control_floor/ios_remote_provider/repos/CFAgent/build/",
+		"-destination", deviceIdString,
+	}
+
+	fmt.Fprintf(f, "Starting CFA via %s with args %s\n", "xcodebuild", strings.Join(args, " "))
+	//fmt.Printf("Starting CFA via %s with args %s\n", "xcodebuild", strings.Join(args, " "))
+
+	o := ProcOptions{
+		procName: "cfa",
+		binary:   "/usr/bin/xcodebuild",
+		args:     args,
+		stderrHandler: func(line string, plog *log.Entry) {
+			if strings.Contains(line, "configuration is unsupported") {
+				plog.Println(line)
+			}
+			fmt.Fprintf(f, "runcfa: %s\n", line)
+		},
+		stdoutHandler: func(line string, plog *log.Entry) {
+			if strings.Contains(line, "NNG Ready") {
+				plog.WithFields(log.Fields{
+					"type": "cfa_start",
+					"uuid": censorUuid(self.udid),
+				}).Info("[CFA] successfully started xcodebuild")
+				onStart()
+			}
+			if strings.Contains(line, "configuration is unsupported") {
+				plog.Println(line)
+			}
+			// if strings.Contains(line, "Unable to launch") && strings.Contains(line, "invalid code signature") {
+			// 	args := []string{
+			// 		"install",
+			// 		"--path", "bin/cfa/Debug-iphoneos/CFAgent-Runner.app",
+			// 		"--udid", self.udid,
+			// 	}
+			// 	//args = append( args, names... )
+			// 	fmt.Printf("Running %s %s\n", self.bridge.cli, args)
+			// 	/*json, _ := */ exec.Command(self.bridge.cli, args...).Output()
+			// }
+			fmt.Fprintf(f, "runcfa: %s\n", line)
+		},
+		onStop: func(wrapper interface{}) {
+			onStop(wrapper)
+		},
+	}
+
+	proc_generic(self.device, nil, &o)
+}
+
+func (self *GIDev) wdaXcodebuild(onStart func(), onStop func(interface{})) {
+	f, err := os.OpenFile("wda.log",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"type": "wda_log_fail",
+		}).Fatal("Could not open wda.log for writing")
+	}
+
+	deviceIdString := fmt.Sprintf("id=%s", self.udid)
+
+	args := []string{
+		"test-without-building",
+		"-project",
+		"/Users/ltadmin/Documents/ios_control_floor/ios_remote_provider/repos/WebDriverAgent/WebDriverAgent.xcodeproj",
+		"-scheme", "WebDriverAgentRunner",
+		"-derivedDataPath",
+		"/Users/ltadmin/Documents/ios_control_floor/ios_remote_provider/repos/WebDriverAgent/build/",
+		"-destination", deviceIdString,
+	}
+
+	fmt.Fprintf(f, "Starting WDA via %s with args %s\n", "xcodebuild", strings.Join(args, " "))
+	fmt.Printf("Starting WDA via %s with args %s\n", "xcodebuild", strings.Join(args, " "))
+
+	o := ProcOptions{
+		procName: "wda",
+		binary:   "/usr/bin/xcodebuild",
+		args:     args,
+		stderrHandler: func(line string, plog *log.Entry) {
+			if strings.Contains(line, "configuration is unsupported") {
+				plog.Println(line)
+			}
+			fmt.Fprintf(f, "runwda: %s\n", line)
+		},
+		stdoutHandler: func(line string, plog *log.Entry) {
+			if strings.Contains(line, "ServerURLHere") {
+				plog.WithFields(log.Fields{
+					"type": "wda_start",
+					"uuid": censorUuid(self.udid),
+				}).Info("[WDA] successfully started")
+				onStart()
+			}
+			if strings.Contains(line, "configuration is unsupported") {
+				plog.Println(line)
+			}
+			fmt.Fprintf(f, "runwda: %s\n", line)
+		},
+		onStop: func(wrapper interface{}) {
+			onStop(wrapper)
+		},
+	}
+
+	proc_generic(self.device, nil, &o)
 }
 
 func (self *GIDev) cfaGoIos(onStart func(), onStop func(interface{})) {
