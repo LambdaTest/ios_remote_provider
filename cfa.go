@@ -507,7 +507,7 @@ func (self *CFA) handleAutoAcceptAlerts(autoAcceptAlerts string) {
         action: "autoAcceptAlerts"
         autoAcceptAlerts:%s
     }`, autoAcceptAlerts)
-	if autoAcceptAlerts == "true" {
+	if strings.ToLower(autoAcceptAlerts) == "true" {
 		self.autoAcceptAlerts = true
 	} else {
 		self.autoAcceptAlerts = false
