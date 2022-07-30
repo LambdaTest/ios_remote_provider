@@ -11,7 +11,7 @@
     }
     bridge: "go-ios"
     repos: {
-        wda: "https://github.com/LambdaTest/lambda-web-driver-agent.git"
+        wda: "https://github.com/LambdatestIncPrivate/lambda-web-driver-agent.git"
         cfa: "https://github.com/sonusainier/ControlFloorAgent.git"
         ujsonin: "https://github.com/nanoscopic/ujsonin.git"
         pbxproj: "https://github.com/kronenthaler/mod-pbxproj"

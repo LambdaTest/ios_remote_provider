@@ -969,7 +969,7 @@ func (self *GIDev) wdaGoIos(onStart func(), onStop func(interface{})) {
 		"runwda",
 		"--bundleid", bi,
 		"--testrunnerbundleid", bi,
-		"--xctestconfig", "WebDriverAgentRunner.xctest",
+		"--xctestconfig", "LambdaTestRunner.xctest",
 		"--udid", self.udid,
 	}
 
