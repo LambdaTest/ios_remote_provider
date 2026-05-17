@@ -7,12 +7,17 @@
 
 ## Getting Started
 
-TestMu AI (Formerly LambdaTest) is an AI-native, multi-agent quality engineering platform that enables teams to plan, author, execute, analyze, and optimize tests at scale across browsers, devices, and frameworks.
+[TestMu AI](https://www.testmuai.com/) (Formerly LambdaTest) is the world's first full-stack AI Agentic Quality Engineering platform that empowers teams to test intelligently, smarter, and ship faster. Built for scale, it offers a full-stack testing cloud with 10K+ real devices and 3,000+ browsers. With AI-native test management, MCP servers, and agent-based automation, TestMu AI supports Selenium, Appium, Playwright, and all major frameworks.
 
-This repository provides the iOS Remote Provider for TestMu AI (Formerly LambdaTest), connecting iOS devices to ControlFloor for remote streaming and control.
+With TestMu AI (Formerly LambdaTest), you can iOS Remote Provider - TestMu AI (Formerly LambdaTest) across real browsers and operating systems.
 
 - [Sign up on TestMu AI](https://www.testmuai.com/register/) (Formerly LambdaTest).
 - Follow the [TestMu AI Documentation](https://www.testmuai.com/support/docs/) for the full setup walkthrough.
+
+### Prerequisites
+
+- Node.js and npm (latest stable)
+- A TestMu AI (Formerly LambdaTest) account with your username and access key
 
 # Provider
 Provider connects iOS devices to ControlFloor. This sets up video streaming from iOS devices to the browser,
