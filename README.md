@@ -19,6 +19,11 @@ With TestMu AI (Formerly LambdaTest), you can iOS Remote Provider - TestMu AI (F
 - Node.js and npm (latest stable)
 - A TestMu AI (Formerly LambdaTest) account with your username and access key
 
+### Prerequisites
+
+- Node.js and npm (latest stable)
+- A TestMu AI (Formerly LambdaTest) account with your username and access key
+
 # Provider
 Provider connects iOS devices to ControlFloor. This sets up video streaming from iOS devices to the browser,
 and also enables the devices to be controlled remotely.
